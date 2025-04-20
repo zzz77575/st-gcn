@@ -97,7 +97,9 @@ class Model(nn.Module):
         N, C, T, V, M = x.size()
         x = x.permute(0, 4, 3, 1, 2).contiguous()
         x = x.view(N * M, V * C, T)
-        x = self.data_bn(x)
+        x = self.data_bn(x) # in_channels * A.size(1) C*V  
+        # nn.BatchNorm1d 会对每个特征（在这里是 V * C）进行归一化处理，
+        # 以确保每个特征在当前批次中的均值接近 0，标准差接近 1。
         x = x.view(N, M, V, C, T)
         x = x.permute(0, 1, 3, 4, 2).contiguous()
         x = x.view(N * M, C, T, V)
